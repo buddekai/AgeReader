@@ -1,0 +1,17 @@
+Package: AgeReader
+Title: Determining the age of fish by reading otoliths
+Version: 0.1.7
+Authors@R: c(person("Kai", "Budde", email = "kaibudde@gmail.com",
+    role = c("aut", "cre")), person("Franziska", "Schade",
+    email="franziska.schade@thuenen.de", role = c("aut")))
+Description: The package automatically looks for hyaline rings in cross
+    sections of otoliths. It determines the age of the fish by comparing
+    the number of ring starting from the center to two different points
+    reaching the outer edges of the otolith.
+Depends: R (>= 3.0.0)
+License: file LICENSE
+Encoding: UTF-8
+LazyData: true
+Imports: tiff, utils, stats
+ByteCompile: TRUE
+RoxygenNote: 6.0.1
