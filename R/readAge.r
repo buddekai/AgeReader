@@ -60,11 +60,10 @@ read.age <- function(input.dir = NULL,
                      show.all.possible.rings = FALSE){
     
 
-    # Basics and sourcing functions ----------------------------------------
+    # Basics ---------------------------------------------------------------
     .old.options <- options()
     on.exit(options(.old.options))
     options(stringsAsFactors = FALSE, warn=-1)
-    
     
     
     # Data input -----------------------------------------------------------
@@ -169,6 +168,8 @@ read.age <- function(input.dir = NULL,
     file.names.tif <- file.names[grepl("tif", file.names)]
     #file.names.czi <- file.names[grepl("czi", file.names)]
     rm(file.names)
+    
+    
     
     # -------------------------------------------------------------------- #
     # -------------------------------------------------------------------- #
