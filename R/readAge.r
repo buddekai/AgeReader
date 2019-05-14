@@ -140,20 +140,28 @@ read.age <- function(input.dir = NULL,
     # Make a new subdirectory where the file is from
     if(!is.null(input.file) & is.null(input.dir)){
         
+        # If test file from package is used
         if(input.file == "example.tif"){
+            example.image <- TRUE
             input.file <- system.file("extdata", "example.tif",
-                                      package = "AgeReader")}
-            
-        # If the path is written as "dir\\file.tif"
-        if(grepl("\\\\", input.file)){
-            output.dir <- gsub("(.*)\\.*\\.tif+", "\\1", input.file)
-            output.dir <- paste(output.dir, "\\output\\", sep="")
-            input.file <- gsub(".*\\(.*\\.tif+)", "\\1", input.file)
-        # If the path is written as "dir/file.tif"
-        }else{
-            output.dir <- gsub("(.*)/.*\\.tif+", "\\1", input.file)
+                                      package = "AgeReader")
+            output.dir <- getwd()
             output.dir <- paste(output.dir, "/output/", sep="")
-            input.file <- gsub(".*/(.*\\.tif+)", "\\1", input.file)
+            
+        # Else
+        }else{
+            example.image <- FALSE
+            # If the path is written as "dir\\file.tif"
+            if(grepl("\\\\", input.file)){
+                output.dir <- gsub("(.*)\\.*\\.tif+", "\\1", input.file)
+                output.dir <- paste(output.dir, "\\output\\", sep="")
+                input.file <- gsub(".*\\(.*\\.tif+)", "\\1", input.file)
+                # If the path is written as "dir/file.tif"
+            }else{
+                output.dir <- gsub("(.*)/.*\\.tif+", "\\1", input.file)
+                output.dir <- paste(output.dir, "/output/", sep="")
+                input.file <- gsub(".*/(.*\\.tif+)", "\\1", input.file)
+            }
         }
     }
     
@@ -168,7 +176,8 @@ read.age <- function(input.dir = NULL,
         file.names <- input.file
         }else{
             file.names <- list.files(path = input.dir)
-            }
+        }
+    
     
     file.names.tif <- file.names[grepl("tif", file.names)]
     #file.names.czi <- file.names[grepl("czi", file.names)]
@@ -601,8 +610,8 @@ read.age <- function(input.dir = NULL,
             ifelse(image.information > 1, 1, image.information)
         
         if(is.null(input.dir)){
-            if(input.file == "example.tif"){
-                save.file.name <- paste(getwd(),"/example_done.tif", sep="")
+            if(example.image == TRUE){
+                save.file.name <- paste(output.dir,"example_done.tif", sep="")
                 print(paste("Example saved in ", save.file.name, ".",
                             sep=""))
             }else{
