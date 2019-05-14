@@ -153,14 +153,12 @@ read.age <- function(input.dir = NULL,
             example.image <- FALSE
             # If the path is written as "dir\\file.tif"
             if(grepl("\\\\", input.file)){
-                output.dir <- gsub("(.*)\\.*\\.tif+", "\\1", input.file)
+                output.dir <- gsub("(.*)\\\\.*\\.tif+", "\\1", input.file)
                 output.dir <- paste(output.dir, "\\output\\", sep="")
-                input.file <- gsub(".*\\(.*\\.tif+)", "\\1", input.file)
                 # If the path is written as "dir/file.tif"
             }else{
                 output.dir <- gsub("(.*)/.*\\.tif+", "\\1", input.file)
                 output.dir <- paste(output.dir, "/output/", sep="")
-                input.file <- gsub(".*/(.*\\.tif+)", "\\1", input.file)
             }
         }
     }
@@ -173,11 +171,15 @@ read.age <- function(input.dir = NULL,
     
     # Save the file names (tifs) ----------------------------------
     if(is.null(input.dir)){
-        file.names <- input.file
+        if(grepl("\\\\", input.file)){
+            file.names <- gsub(".*\\\\(.*\\.tif+)", "\\1", input.file)
+            # If the path is written as "dir/file.tif"
+            }else{
+                file.names <- gsub(".*/(.*\\.tif+)", "\\1", input.file)
+                }
         }else{
             file.names <- list.files(path = input.dir)
         }
-    
     
     file.names.tif <- file.names[grepl("tif", file.names)]
     #file.names.czi <- file.names[grepl("czi", file.names)]
@@ -205,7 +207,7 @@ read.age <- function(input.dir = NULL,
         # Path of the current image to work with
         image.path <- ifelse(
             test = is.null(input.dir),
-            yes = file.names.tif[i],
+            yes = input.file[i],
             no = paste(input.dir, file.names.tif[i], sep="\\"))
         
         current.row.number <- which(df.user.file$pic_name %in% image.name)
