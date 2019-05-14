@@ -65,12 +65,15 @@ read.age <- function(input.dir = NULL,
     on.exit(options(.old.options))
     options(stringsAsFactors = FALSE, warn=-1)
     
+    # -------------------------------------------------------------------- #
+    #                         1. Initialization                            #
+    # -------------------------------------------------------------------- #
     
     # Data input -----------------------------------------------------------
     
     # Input directory or input file - either one of them must be
     # submitted. If not: close function call.
-    if( is.null(input.dir) & is.null(input.file)){
+    if(is.null(input.dir) & is.null(input.file)){
         print(paste("Please call function with either an input directory ",
                     "which contains images of otoliths or with a single ",
                     "image file.", sep=""))
@@ -79,14 +82,14 @@ read.age <- function(input.dir = NULL,
     
     # User file (either german (de) or english (en) version) - only one of
     # them must be submitted.
-    if( is.null(user.file.en) & is.null(user.file.de)){
+    if(is.null(user.file.en) & is.null(user.file.de)){
         language.mode <- "NA"
         # Make data.frame from scratch
         df.user.file <- data.frame(pic_name = NA)
         user.file.from.scratch <- TRUE
     }
     # If both are submitted, close function call
-    if( !is.null(user.file.en) & !is.null(user.file.de)){
+    if(!is.null(user.file.en) & !is.null(user.file.de)){
         print("Please call function with only one user file.")
         return()
     }
@@ -120,29 +123,37 @@ read.age <- function(input.dir = NULL,
     }
     
     # Data output ----------------------------------------------------------
+    
     # Make a new subdirectory inside the input directory
     if(is.null(input.file) & !is.null(input.dir)){
         
         if(grepl("\\\\", input.dir)){
-            input.dir <- gsub("\\$", "", input.dir)
+            input.dir  <- gsub("\\$", "", input.dir)
             output.dir <- paste(input.dir, "\\output\\", sep="")
         }else{
-            input.dir <- gsub("/$", "", input.dir)
+            input.dir  <- gsub("/$", "", input.dir)
             output.dir <- paste(input.dir, "/output/", sep="")
         }
-        
         
     }
     
     # Make a new subdirectory where the file is from
     if(!is.null(input.file) & is.null(input.dir)){
-
+        
+        if(input.file == "example.tif"){
+            input.file <- system.file("extdata", "example.tif",
+                                      package = "AgeReader")}
+            
+        # If the path is written as "dir\\file.tif"
         if(grepl("\\\\", input.file)){
-            output.dir <- gsub("(.*)\\\\.*\\.tif+", "\\1", input.file)
+            output.dir <- gsub("(.*)\\.*\\.tif+", "\\1", input.file)
             output.dir <- paste(output.dir, "\\output\\", sep="")
+            input.file <- gsub(".*\\(.*\\.tif+)", "\\1", input.file)
+        # If the path is written as "dir/file.tif"
         }else{
-            output.dir <- gsub("(.*)/\\.*/.tif+", "\\1", input.file)
+            output.dir <- gsub("(.*)/.*\\.tif+", "\\1", input.file)
             output.dir <- paste(output.dir, "/output/", sep="")
+            input.file <- gsub(".*/(.*\\.tif+)", "\\1", input.file)
         }
     }
     
@@ -151,19 +162,13 @@ read.age <- function(input.dir = NULL,
     
     # Adapt user file data.frame -------------------------------------------
     df.user.file <- add.col.to.user.file(df.user.file)
-
+    
     # Save the file names (tifs) ----------------------------------
     if(is.null(input.dir)){
-        if(input.file == "example.tif"){
-            file.names <- system.file("extdata", "example.tif",
-                                      package = "AgeReader")
+        file.names <- input.file
         }else{
-            file.names <- input.file
-        }
-        
-    }else{
-        file.names <- list.files(path = input.dir)
-    }
+            file.names <- list.files(path = input.dir)
+            }
     
     file.names.tif <- file.names[grepl("tif", file.names)]
     #file.names.czi <- file.names[grepl("czi", file.names)]
@@ -172,7 +177,9 @@ read.age <- function(input.dir = NULL,
     
     
     # -------------------------------------------------------------------- #
+    #               2. Reading and Editing every picture                   #
     # -------------------------------------------------------------------- #
+    
     
     # i = 1 .. n(images) Go through all images (tifs) ----------------------
     for(i in 1:length(file.names.tif)){
@@ -180,10 +187,12 @@ read.age <- function(input.dir = NULL,
         print(paste("Dealing with ", file.names.tif[i], ". (It is now ",
                     Sys.time(), ".)", sep=""))
         
-        # Save the row number of data.frame which contains the current
-        # image.
+        ## Save the row number of data.frame which contains the current ----
+        ## image.
         
+        # Name of the image without the ending
         image.name <- gsub("(.*)\\.tif*", "\\1", file.names.tif[i])
+        
         # Path of the current image to work with
         image.path <- ifelse(
             test = is.null(input.dir),
@@ -207,11 +216,11 @@ read.age <- function(input.dir = NULL,
             return()
         }
         
+        
         ## Mark the current line as being processed.
         #df.user.file$PROCESSED[current.row.number] <- "Yes"
         
-        # Find scale of image ----------------------------------------------
-        
+        ## Find scale of image
         ## Only try to look for the czi-file if there are any.
         #if(length(file.names.czi) > 0){
         #    
@@ -242,23 +251,22 @@ read.age <- function(input.dir = NULL,
         
         image <- tiff::readTIFF(source = image.path, info = FALSE)
         
-        # Save two different grey versions of the image
-        image.grey <- edit.image(image = image, grey.mode = "normal.grey")
-        image.grey2 <- edit.image(image = image, grey.mode = "red.grey")
-        
         # Save an empty array which will be filled with information of
         # lines etc.
         
         image.information <- array(data = 0, dim = dim(image))
         
+        # Save two different grey versions of the image
+        image.grey.outline  <-
+            edit.image(image = image, grey.mode = "normal.grey")
+        image.grey.ring     <-
+            edit.image(image = image, grey.mode = "red.grey")
         
         # Find Edge --------------------------------------------------------
         # Save the edge of the otolith in image.information.
-        # Save x- and y-values of the borders in the data.frame
-        # df.user.file. 
-        
+
         function.results <- detect.outline(
-            image.grey = image.grey,
+            image.grey = image.grey.outline,
             image.information = image.information,
             distance = distance,
             parameter.for.end = parameter.for.end,
@@ -269,6 +277,10 @@ read.age <- function(input.dir = NULL,
         image.border      <- function.results[[2]]
         left.point        <- function.results[[3]]
         right.point       <- function.results[[4]]
+        
+        
+        # Save x- and y-values of the borders in the data.frame
+        # df.user.file. 
         
         #df.user.file$top_border[current.row.number]   <- image.border[1]
         #df.user.file$right_border[current.row.number] <- image.border[2]
@@ -332,7 +344,7 @@ read.age <- function(input.dir = NULL,
         #print("Left Line")
         if(midpoint.left != left.point){
             function.results <- detect.rings(
-                image.grey = image.grey2,
+                image.grey = image.grey.ring,
                 image.information = image.information,
                 first.point = midpoint.left,
                 second.point = left.point,
@@ -357,7 +369,7 @@ read.age <- function(input.dir = NULL,
         #print("Right Line")
         if(midpoint.right != right.point){
             function.results <- detect.rings(
-                image.grey = image.grey2,
+                image.grey = image.grey.ring,
                 image.information = image.information,
                 first.point = midpoint.right,
                 second.point = right.point,
@@ -621,9 +633,8 @@ read.age <- function(input.dir = NULL,
     }
     
     # -------------------------------------------------------------------- #
+    #   3. Save the extended table with all data obtained from the images  #
     # -------------------------------------------------------------------- #
-    
-    
     
     
     # Save the customized user file ----------------------------------------
