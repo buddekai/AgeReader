@@ -1,4 +1,4 @@
-#' @title detect.outline
+#' @title detect.outline 
 #' @description Detect the outline of the otolith
 #' @details We will add more later...To be continued
 #' @aliases detect.outline outline.detect
@@ -15,6 +15,7 @@
 #' multiplying the parameter with the mean distance between points.)
 #' @param file.name A character
 #' @param grey.mode A character
+#' testtest
 
 detect.outline <- function(image.grey = NULL,
                            image.information = NULL,
