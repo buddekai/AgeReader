@@ -57,7 +57,8 @@ read.age <- function(input.dir = NULL,
                      t = 2,
                      difference.in.percent = 0.25,
                      outer.zone.pixel = 50,
-                     show.all.possible.rings = FALSE){
+                     show.all.possible.rings = FALSE,
+                     distance.second.lines = 50){
     
 
     # Basics ---------------------------------------------------------------
@@ -308,7 +309,9 @@ read.age <- function(input.dir = NULL,
         
         # Find hyaline rings -----------------------------------------------
         
+        # First pair of lines ----------------------------------------------
         # Calculate the line indices
+        print("first lines")
         # left line
         first.line <- getLineIndices(start.x = left.point[1],
                                      start.y = left.point[2],
@@ -322,6 +325,7 @@ read.age <- function(input.dir = NULL,
                                       end.y = image.border[1]) # top.y
         
         lines <- rbind(first.line, second.line)
+        print(lines)
         
         image.information[cbind(lines[,2], lines[,1], 3)] <- -1
         image.information[cbind(lines[,2], lines[,1], 2)] <- 1
@@ -399,6 +403,202 @@ read.age <- function(input.dir = NULL,
             
             rm(function.results)
         }
+        
+        # Second pair of lines (above) -------------------------------------
+        
+        # Calculate the line indices
+        # left line
+        print("second lines")
+        
+        first.line <- getLineIndices(start.x = left.point[1],
+                                     start.y = left.point[2] - distance.second.lines,
+                                     end.x = image.border[2], # right.x
+                                     end.y = image.border[1]) # top.y
+        
+        # right line
+        second.line <- getLineIndices(start.x = right.point[1],
+                                      start.y = right.point[2]- distance.second.lines,
+                                      end.x = image.border[4], # left.x
+                                      end.y = image.border[1]) # top.y
+        
+        lines <- rbind(first.line, second.line)
+        #print(lines)
+        
+        image.information[cbind(lines[,2], lines[,1], 3)] <- -1
+        image.information[cbind(lines[,2], lines[,1], 2)] <- 1
+        image.information[cbind(lines[,2], lines[,1], 1)] <- -1
+        
+        midpoint <- lines[which(duplicated(lines))[1],]
+        
+        # if the lines do not cross each other exactly
+        if(all(is.na(midpoint))){
+            # move second line one pixel up
+            second.line[,2] <- second.line[,2] - 1
+            
+            lines <- rbind(first.line, second.line)
+            
+            midpoint.left <- lines[which(duplicated(lines))[1],]
+            if(all(is.na(midpoint.left))){
+                print("Something went wrong.")
+            }
+            midpoint.right <- midpoint.left
+            midpoint.right[2] <- midpoint.right[2] + 1
+            
+            second.line[,2] <- second.line[,2] + 1
+        }else{
+            midpoint.left <- midpoint
+            midpoint.right <- midpoint
+        }
+        
+        # Go through lines and find hyaline (bright) ring structures.
+        
+        # Left line
+        #print("Left Line")
+        if(midpoint.left != left.point){
+            function.results <- detect.rings(
+                image.grey = image.grey.ring,
+                image.information = image.information,
+                first.point = midpoint.left,
+                second.point = left.point,
+                line.to.follow = first.line,
+                par.hyaline = par.hyaline,
+                points.to.jump = points.to.jump,
+                points.for.reconnecting = points.for.reconnecting,
+                remove.points.at.beginning = remove.points.at.beginning,
+                remove.points.at.end = remove.points.at.end,
+                t = t,
+                difference.in.percent = difference.in.percent,
+                show.all.possible.rings)
+            
+            image.information <- function.results[[1]]
+            df.line.values.left <- function.results[[2]]
+            
+            rm(function.results)
+        }
+        
+        
+        # Right line
+        #print("Right Line")
+        if(midpoint.right != right.point){
+            function.results <- detect.rings(
+                image.grey = image.grey.ring,
+                image.information = image.information,
+                first.point = midpoint.right,
+                second.point = right.point,
+                line.to.follow = second.line,
+                par.hyaline = par.hyaline,
+                points.to.jump = points.to.jump,
+                points.for.reconnecting = points.for.reconnecting,
+                remove.points.at.beginning = remove.points.at.beginning,
+                remove.points.at.end = remove.points.at.end,
+                t = t,
+                difference.in.percent = difference.in.percent,
+                show.all.possible.rings)
+            
+            image.information <- function.results[[1]]
+            df.line.values.right <- function.results[[2]]
+            
+            rm(function.results)
+        }
+        
+        # Thrid pair of lines (below) --------------------------------------
+        
+        # Calculate the line indices
+        # left line
+        print("second lines")
+        
+        first.line <- getLineIndices(start.x = left.point[1],
+                                     start.y = left.point[2] + distance.second.lines,
+                                     end.x = image.border[2], # right.x
+                                     end.y = image.border[1]) # top.y
+        
+        # right line
+        second.line <- getLineIndices(start.x = right.point[1],
+                                      start.y = right.point[2] + distance.second.lines,
+                                      end.x = image.border[4], # left.x
+                                      end.y = image.border[1]) # top.y
+        
+        lines <- rbind(first.line, second.line)
+        #print(lines)
+        
+        image.information[cbind(lines[,2], lines[,1], 3)] <- -1
+        image.information[cbind(lines[,2], lines[,1], 2)] <- 1
+        image.information[cbind(lines[,2], lines[,1], 1)] <- -1
+        
+        midpoint <- lines[which(duplicated(lines))[1],]
+        
+        # if the lines do not cross each other exactly
+        if(all(is.na(midpoint))){
+            # move second line one pixel up
+            second.line[,2] <- second.line[,2] - 1
+            
+            lines <- rbind(first.line, second.line)
+            
+            midpoint.left <- lines[which(duplicated(lines))[1],]
+            if(all(is.na(midpoint.left))){
+                print("Something went wrong.")
+            }
+            midpoint.right <- midpoint.left
+            midpoint.right[2] <- midpoint.right[2] + 1
+            
+            second.line[,2] <- second.line[,2] + 1
+        }else{
+            midpoint.left <- midpoint
+            midpoint.right <- midpoint
+        }
+        
+        # Go through lines and find hyaline (bright) ring structures.
+        
+        # Left line
+        #print("Left Line")
+        if(midpoint.left != left.point){
+            function.results <- detect.rings(
+                image.grey = image.grey.ring,
+                image.information = image.information,
+                first.point = midpoint.left,
+                second.point = left.point,
+                line.to.follow = first.line,
+                par.hyaline = par.hyaline,
+                points.to.jump = points.to.jump,
+                points.for.reconnecting = points.for.reconnecting,
+                remove.points.at.beginning = remove.points.at.beginning,
+                remove.points.at.end = remove.points.at.end,
+                t = t,
+                difference.in.percent = difference.in.percent,
+                show.all.possible.rings)
+            
+            image.information <- function.results[[1]]
+            df.line.values.left <- function.results[[2]]
+            
+            rm(function.results)
+        }
+        
+        
+        # Right line
+        #print("Right Line")
+        if(midpoint.right != right.point){
+            function.results <- detect.rings(
+                image.grey = image.grey.ring,
+                image.information = image.information,
+                first.point = midpoint.right,
+                second.point = right.point,
+                line.to.follow = second.line,
+                par.hyaline = par.hyaline,
+                points.to.jump = points.to.jump,
+                points.for.reconnecting = points.for.reconnecting,
+                remove.points.at.beginning = remove.points.at.beginning,
+                remove.points.at.end = remove.points.at.end,
+                t = t,
+                difference.in.percent = difference.in.percent,
+                show.all.possible.rings)
+            
+            image.information <- function.results[[1]]
+            df.line.values.right <- function.results[[2]]
+            
+            rm(function.results)
+        }
+        
+        
         # Add information to user.file data.frame --------------------------
         
         # Ring number
