@@ -4,7 +4,7 @@
 #' @aliases detect.outline outline.detect
 #' @author Kai Budde
 #' @export detect.outline
-#' @param file.name A character:Full path of an image that shall be used for
+#' @param input.file A character:Full path of an image that shall be used for
 #' outline detection
 #' @param image.grey A matrix of numbers: Grey values of the otolith image
 #' (values between 0 and 1)
@@ -21,7 +21,7 @@
 #' information of the image (values between 0 and 1)
 
 detect.outline <- function(
-    file.name = NULL,
+    input.file = NULL,
     image.grey = NULL,
     grey.mode = "normal.grey",
     parameter.for.end = NULL,
@@ -44,14 +44,14 @@ detect.outline <- function(
     min.dist.from.midpoint <- 0.2
     
     # Import image (if function is used by itself) -------------------------
-    if(!is.null(file.name)){
+    if(!is.null(input.file)){
         #options (don't show warnings)
         .old.options <- options()
         on.exit(options(.old.options))
         options(stringsAsFactors = FALSE, warn=-1)
         
         # read image
-        image <- tiff::readTIFF(source = file.name, info = FALSE)
+        image <- tiff::readTIFF(source = input.file, info = FALSE)
         image.grey <- edit.image(image = image, grey.mode = grey.mode)
         image.information <- array(data = 0, dim = dim(image))
     }
@@ -315,7 +315,7 @@ detect.outline <- function(
     
     
     # Export image if function is used by itself ---------------------------
-    if(!is.null(file.name)){
+    if(!is.null(input.file)){
         
         # Add image.information to image
         image.information <- image + image.information
@@ -326,15 +326,15 @@ detect.outline <- function(
             ifelse(image.information > 1, 1, image.information)
         
         # Save image
-        save.file.name <- gsub("\\.tif+", "", file.name)
-        save.file.name <- paste(save.file.name, "_edge.tif", sep="")
+        save.input.file <- gsub("\\.tif+", "", input.file)
+        save.input.file <- paste(save.input.file, "_edge.tif", sep="")
         
         tiff::writeTIFF(what = image.information,
-                        where = save.file.name,
+                        where = save.input.file,
                         bits.per.sample = 8L, compression = "none",
                         reduce = TRUE)
         return(print(paste("The edited image has been saved as ",
-                           save.file.name, ".", sep="")))
+                           save.input.file, ".", sep="")))
         
     }
     
