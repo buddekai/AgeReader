@@ -39,6 +39,10 @@ detect.outline <- function(
     parameter.for.end.low <- 1.2
     parameter.for.end.high <- 1.6
     
+    # Minimum distance (percentage of max distance) of edge point from the
+    # midpoint
+    min.dist.from.midpoint <- 0.2
+    
     # Import image (if function is used by itself) -------------------------
     if(!is.null(file.name)){
         #options (don't show warnings)
@@ -218,19 +222,34 @@ detect.outline <- function(
     df.edge$x2 <- c(df.edge$x1[2:number.of.edge.points], df.edge$x1[1])
     
     # Calculate the Euclidean distance of each edge point to the next one
-    df.edge$dist <- (df.edge$x2-df.edge$x1)^2+(df.edge$y2-df.edge$y1)^2
+    df.edge$dist <- sqrt((df.edge$x2-df.edge$x1)^2 +
+                             (df.edge$y2-df.edge$y1)^2)
     
     # Calculate the mean distance between two edge points
     mean.distance <- mean(df.edge$dist)
     
+    # Calculate distance from each edge point to midpoint
+    df.edge$distToMidpoint <-
+        sqrt((df.edge$x1-mid.point[2])^2+(df.edge$y1-mid.point[1])^2)
+    
+    # Remove all outlier that are more away than
+    # min.dist.from.midpoint * max(df.edge$distToMidpoint)
+    
+    df.edge$outlier <- ifelse(
+        test = (df.edge$distToMidpoint <
+                    (min.dist.from.midpoint * max(df.edge$distToMidpoint))),
+        1, 0)
     
     # Remove all outlier that are more away than
     # parameter.distance.deviation * mean.distance
     
     # Mark the outliers in the data frame
-    df.edge$outlier <- ifelse(
+    df.edge$outlier2 <- ifelse(
         test = df.edge$dist > parameter.distance.deviation * mean.distance,
         1, 0)
+    
+    # Combine both outlier columns
+    df.edge$outlier <- as.numeric(df.edge$outlier | df.edge$outlier2)
     
     # Get the indeces of the outliers
     outliers <- which( df.edge$outlier == 1 )
