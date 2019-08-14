@@ -19,6 +19,8 @@
 #' multiplying the parameter with the mean distance between points
 #' @param image.information A matrix of numbers: Contains additional pixel
 #' information of the image (values between 0 and 1)
+#' @param image A matrix of numbers: Contains the information of the otolith
+#' image
 
 detect.outline <- function(
     input.file = NULL,
@@ -27,7 +29,8 @@ detect.outline <- function(
     parameter.for.end = NULL,
     distance = 20,
     parameter.distance.deviation = 2,
-    image.information = NULL){
+    image.information = NULL,
+    image = NULL){
     
     # Parameters of the function that shall not be changed -----------------
     

@@ -385,3 +385,49 @@ count.rings <- function(df.line.values){
     
     return(df.line.values)
 }
+
+
+# Get Block Pixels ---------------------------------------------------------
+getBlockPixels <- function(upper.left.corner, lower.right.corner){
+    vertical.pixels <- upper.left.corner[1]:lower.right.corner[1]
+    horizontal.pixels <- upper.left.corner[2]:lower.right.corner[2]
+    
+    blockPixels <- as.matrix(expand.grid(vertical.pixels, horizontal.pixels,
+                                         stringsAsFactors = FALSE))
+    
+    return(blockPixels)
+}
+
+
+# Get Corner Pixels --------------------------------------------------------
+getCornerPixels <- function(upper.left.corner, lower.right.corner){
+    
+    vertical.pixels <- upper.left.corner[1]:lower.right.corner[1]
+    horizontal.pixels <- upper.left.corner[2]:lower.right.corner[2]
+    
+    upper.line <- matrix(
+        data = c(rep(upper.left.corner[1], length(horizontal.pixels)),
+                 horizontal.pixels), ncol = 2)
+    
+    lower.line <- matrix(
+        data = c(rep(lower.right.corner[1], length(horizontal.pixels)),
+                 horizontal.pixels), ncol = 2)
+    
+    right.line <- matrix(
+        data = c(vertical.pixels,
+                 rep(lower.right.corner[2], length(vertical.pixels))),
+        ncol = 2)
+    
+    left.line <- matrix(
+        data = c(vertical.pixels,
+                 rep(upper.left.corner[2], length(vertical.pixels))),
+        ncol = 2)
+    
+    
+    cornerPixels <- rbind(upper.line, right.line, lower.line, left.line)
+    cornerPixels <- cornerPixels[!duplicated(cornerPixels),]
+    
+    rm(upper.line, right.line, lower.line, left.line)
+    
+    return(cornerPixels)
+}
