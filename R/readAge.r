@@ -366,14 +366,14 @@ read.age <- function(input.dir = NULL,
             if(i == 1){
                 
                 # midpoint is (y,x) and must be reversed
-                #coordinates.of.midpoint <- midpoint.left
-                #coordinates.of.midpoint[1] <- midpoint.left[2]
-                #coordinates.of.midpoint[2] <- midpoint.left[1]
+                coordinates.of.midpoint <- c(0,0)
+                coordinates.of.midpoint[1] <- (frame.center[1] + midpoint.left[2]) %/% 2
+                coordinates.of.midpoint[2] <- (frame.center[2] + midpoint.left[1]) %/% 2
                 
                 coordinates.of.midpoint <-
                     find.midpoint(image = image,
                                   image.grey = image.grey.outline,
-                                  center.point = frame.center,
+                                  center.point = coordinates.of.midpoint,
                                   number.of.blocks.in.row = 4,
                                   search.length = 160,
                                   image.path)
