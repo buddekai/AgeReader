@@ -312,7 +312,7 @@ read.age <- function(input.dir = NULL,
         
         # First pair of lines ----------------------------------------------
         # Calculate the line indices
-        print("first lines")
+        #print("first lines")
         # left line
         # TODO: Call first line: left line and second line right line
         first.line <- getLineIndices(start.x = left.point[1],
@@ -327,7 +327,7 @@ read.age <- function(input.dir = NULL,
                                       end.y = image.border[1]) # top.y
         
         lines <- rbind(first.line, second.line)
-        print(lines)
+        #print(lines)
         
         image.information[cbind(lines[,2], lines[,1], 3)] <- -1
         image.information[cbind(lines[,2], lines[,1], 2)] <- 1
@@ -358,15 +358,47 @@ read.age <- function(input.dir = NULL,
         
         # TODO: Find a better midpoint -> darker one?
         
+        for(i in 1:3){
+            if(i == 1){
+                
+                # midpoint is (y,x) and must be reversed
+                coordinates.of.midpoint <- midpoint.left
+                coordinates.of.midpoint[1] <- midpoint.left[2]
+                coordinates.of.midpoint[2] <- midpoint.left[1]
+                
+                coordinates.of.midpoint <-
+                    find.midpoint(image = image,
+                                  image.grey = image.grey.outline,
+                                  center.point = coordinates.of.midpoint,
+                                  number.of.blocks.in.row = 3,
+                                  search.length = 180,
+                                  image.path)
+                
+            }else{
+                coordinates.of.midpoint <-
+                    find.midpoint(image = image,
+                                  image.grey = image.grey.outline,
+                                  center.point = coordinates.of.midpoint,
+                                  number.of.blocks.in.row = 3,
+                                  search.length = (180/(3**(i-1))),
+                                  image.path)
+            }
+            print(paste("Coordinates of midpoint: ",
+                        paste(coordinates.of.midpoint, collapse = " ")))
+
+        }
+        
+            
+        
         #left line
         # index of midpoint
-        index.midpoint <- which(first.line==midpoint.left)[1]
-        coordinates <- first.line[(index.midpoint-points.to.look.for.midpoint):(index.midpoint+points.to.look.for.midpoint),]
-        coordinates2 <- coordinates[,c(2,1)]
+        #index.midpoint <- which(first.line==midpoint.left)[1]
+        #coordinates <- first.line[(index.midpoint-points.to.look.for.midpoint):(index.midpoint+points.to.look.for.midpoint),]
+        #coordinates2 <- coordinates[,c(2,1)]
         
-        grey.values.along <- image.grey.ring[coordinates2]
+        #grey.values.along <- image.grey.ring[coordinates2]
                                              
-        new.mid.point.left <-coordinates[which(image.grey.ring[coordinates2] == min(grey.values.along) ),]
+        #new.mid.point.left <-coordinates[which(image.grey.ring[coordinates2] == min(grey.values.along) ),]
         
         #right line
         

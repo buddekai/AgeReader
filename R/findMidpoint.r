@@ -18,7 +18,8 @@ find.midpoint <- function(image = NULL,
                           image.grey = NULL,
                           center.point = NULL,
                           number.of.blocks.in.row = NULL,
-                          search.length = 180){
+                          search.length = 180,
+                          image.path){
     
     #image <- tiff::readTIFF(source = input.file, info = FALSE)
     #image.grey <- edit.image(image = image, grey.mode = "normal.grey")
@@ -71,7 +72,7 @@ find.midpoint <- function(image = NULL,
                 min.meanPixelValue <- meanPixelValue
                 min.i <- i
                 min.j <- j
-                #print("here")
+                coordinates.of.midpoint <- (lower.right.corner + upper.left.corner) %/%2
             }else{
                 meanPixelValue <- mean(image.grey[blockPixels])
                 #print("there")
@@ -79,11 +80,17 @@ find.midpoint <- function(image = NULL,
                     min.meanPixelValue <- meanPixelValue
                     min.i <- i
                     min.j <- j
+                    coordinates.of.midpoint <- (lower.right.corner + upper.left.corner) %/%2
                 }
             }
         }
     }
     
+    
+    # Mark center points blue
+    image.information[coordinates.of.midpoint[1], coordinates.of.midpoint[2], 1] <- 1
+    image.information[coordinates.of.midpoint[1], coordinates.of.midpoint[2], 2] <- 1
+    image.information[coordinates.of.midpoint[1], coordinates.of.midpoint[2], 3] <- 1
 
     # Write image
     # Add image.information to image
@@ -95,16 +102,18 @@ find.midpoint <- function(image = NULL,
         ifelse(image.information > 1, 1, image.information)
     
     # Save image
-    #save.input.file <- gsub("\\.tif+", "", input.file)
-    #save.input.file <- paste(save.input.file, "_blocks_", start.size
-    #                         ,".tif", sep="")
+    save.input.file <- gsub("\\.tif+", "", image.path)
+    save.input.file <- paste(save.input.file, "_blocks_", search.length
+                             ,".tif", sep="")
     
-    #tiff::writeTIFF(what = image.information,
-    #                where = save.input.file,
-    #                bits.per.sample = 8L, compression = "none",
-    #                reduce = TRUE)
+    tiff::writeTIFF(what = image.information,
+                    where = save.input.file,
+                    bits.per.sample = 8L, compression = "none",
+                    reduce = TRUE)
     
-    return()
+    print(paste("Schwarze Mitte: ", paste(coordinates.of.midpoint, collapse = " ")))
+    
+    return(coordinates.of.midpoint)
     
 }
 
