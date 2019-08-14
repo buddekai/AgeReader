@@ -356,20 +356,24 @@ read.age <- function(input.dir = NULL,
         }
         
         
-        # TODO: Find a better midpoint -> darker one?
+        # TODO: Find a better midpoint -> darker one? ----------------------
+        
+        frame.center <- c(0,0)
+        frame.center[1] <- (image.border[1] + image.border[3])%/%2
+        frame.center[2] <- (image.border[2] + image.border[4])%/%2
         
         for(i in 1:3){
             if(i == 1){
                 
                 # midpoint is (y,x) and must be reversed
-                coordinates.of.midpoint <- midpoint.left
-                coordinates.of.midpoint[1] <- midpoint.left[2]
-                coordinates.of.midpoint[2] <- midpoint.left[1]
+                #coordinates.of.midpoint <- midpoint.left
+                #coordinates.of.midpoint[1] <- midpoint.left[2]
+                #coordinates.of.midpoint[2] <- midpoint.left[1]
                 
                 coordinates.of.midpoint <-
                     find.midpoint(image = image,
                                   image.grey = image.grey.outline,
-                                  center.point = coordinates.of.midpoint,
+                                  center.point = frame.center,
                                   number.of.blocks.in.row = 4,
                                   search.length = 160,
                                   image.path)

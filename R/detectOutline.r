@@ -277,6 +277,7 @@ detect.outline <- function(
     left.x   <- min(df.edge$x1[df.edge$outlier==0])
     
     # Save values of the border points in vector
+    # Todo: x/y correct?
     image.border.points <- c(top.y, right.x, bottom.y, left.x)
     
     # Save values of the left and right points for ring detection
