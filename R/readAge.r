@@ -370,8 +370,8 @@ read.age <- function(input.dir = NULL,
                     find.midpoint(image = image,
                                   image.grey = image.grey.outline,
                                   center.point = coordinates.of.midpoint,
-                                  number.of.blocks.in.row = 3,
-                                  search.length = 180,
+                                  number.of.blocks.in.row = 4,
+                                  search.length = 160,
                                   image.path)
                 
             }else{
@@ -379,8 +379,8 @@ read.age <- function(input.dir = NULL,
                     find.midpoint(image = image,
                                   image.grey = image.grey.outline,
                                   center.point = coordinates.of.midpoint,
-                                  number.of.blocks.in.row = 3,
-                                  search.length = (180/(3**(i-1))),
+                                  number.of.blocks.in.row = 4,
+                                  search.length = (160/(6**(i-1))),
                                   image.path)
             }
             print(paste("Coordinates of midpoint: ",
