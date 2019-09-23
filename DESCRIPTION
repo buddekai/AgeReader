@@ -1,6 +1,6 @@
 Package: AgeReader
 Title: Determining the age of fish by reading otoliths
-Version: 0.1.8
+Version: 0.1.9
 Authors@R: c(person("Kai", "Budde", email = "kaibudde@gmail.com",
     role = c("aut", "cre")), person("Franziska", "Schade",
     email="franziska.schade@thuenen.de", role = c("aut")))
@@ -14,4 +14,4 @@ Encoding: UTF-8
 LazyData: true
 Imports: tiff, utils, stats
 ByteCompile: TRUE
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.1

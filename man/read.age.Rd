@@ -13,7 +13,9 @@ read.age(input.dir = NULL, input.file = NULL, user.file.en = NULL,
   points.to.jump = 10, points.for.reconnecting = 20,
   remove.points.at.end = 25, remove.points.at.beginning = 0, t = 2,
   difference.in.percent = 0.25, outer.zone.pixel = 50,
-  show.all.possible.rings = FALSE)
+  show.all.possible.rings = FALSE, distance.second.lines = 50,
+  points.to.look.for.midpoint = 50,
+  find.midpoint.method = "intersectionMidpointThree")
 }
 \arguments{
 \item{input.dir}{A character}
@@ -60,6 +62,8 @@ end of the line belong to the outer zone.)}
 
 \item{show.all.possible.rings}{A boolean (If it is true, than all
 possible rings are being maked blue.)}
+
+\item{find.midpoint.method}{A character ()}
 }
 \description{
 Main function for determining the age of a fish
@@ -70,11 +74,6 @@ The output will be written in the current directory.
 Please be aware that the coordinate system is turned by 90° to the right.
 The origin of the x- and y-axes is in the upper-left corner of the image.
 (The x-axis points downwards and the y-axis to the right.)
-}
-\examples{
-\dontrun{
-read.age(input.file = "example.tif")
-}
 }
 \author{
 Kai Budde

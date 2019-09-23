@@ -37,10 +37,15 @@
 #' end of the line belong to the outer zone.)
 #' @param show.all.possible.rings A boolean (If it is true, than all
 #' possible rings are being maked blue.)
-#' @examples
-#' \dontrun{
-#' read.age(input.file = "example.tif")
-#' }
+#' @param find.midpoint.method A character ()
+
+# Information for tests (delete this):
+#find.midpoint.method = "oldMethod"
+#find.midpoint.method = "intersectionMidpointThree"
+#find.midpoint.method = "intersectionMidpointFour"
+#find.midpoint.method = "intersectionFour"
+#find.midpoint.method = "intersectionFour"
+
 
 read.age <- function(input.dir = NULL,
                      input.file = NULL,
@@ -59,7 +64,8 @@ read.age <- function(input.dir = NULL,
                      outer.zone.pixel = 50,
                      show.all.possible.rings = FALSE,
                      distance.second.lines = 50,
-                     points.to.look.for.midpoint = 50){
+                     points.to.look.for.midpoint = 50,
+                     find.midpoint.method = "intersectionMidpointThree"){
     
 
     # Basics ---------------------------------------------------------------
@@ -362,35 +368,161 @@ read.age <- function(input.dir = NULL,
         frame.center[1] <- (image.border[1] + image.border[3])%/%2
         frame.center[2] <- (image.border[2] + image.border[4])%/%2
         
-        for(i in 1:3){
-            if(i == 1){
+        
+        # Midpoint depending on the parameter
+        if(find.midpoint.method == "intersectionMidpointThree"){
+            print("Used Method for midpoint: Search around midpoint of intersection the midpoint of surrounding frame")
+            for(i in 1:3){
+                if(i == 1){
+                    
+                    # midpoint is (y,x) and must be reversed
+                    coordinates.of.midpoint <- c(0,0)
+                    coordinates.of.midpoint[1] <- (frame.center[1] + midpoint.left[2]) %/% 2
+                    coordinates.of.midpoint[2] <- (frame.center[2] + midpoint.left[1]) %/% 2
+                    
+                    coordinates.of.midpoint <-
+                        find.midpoint(image = image,
+                                      image.grey = image.grey.outline,
+                                      center.point = coordinates.of.midpoint,
+                                      number.of.blocks.in.row = 3,
+                                      search.length = 160,
+                                      image.path)
+                    
+                }else{
+                    coordinates.of.midpoint <-
+                        find.midpoint(image = image,
+                                      image.grey = image.grey.outline,
+                                      center.point = coordinates.of.midpoint,
+                                      number.of.blocks.in.row = 3,
+                                      search.length = (160/(6**(i-1))),
+                                      image.path)
+                }
+                print(paste("Coordinates of midpoint: ",
+                            paste(coordinates.of.midpoint, collapse = " ")))
                 
-                # midpoint is (y,x) and must be reversed
-                coordinates.of.midpoint <- c(0,0)
-                coordinates.of.midpoint[1] <- (frame.center[1] + midpoint.left[2]) %/% 2
-                coordinates.of.midpoint[2] <- (frame.center[2] + midpoint.left[1]) %/% 2
-                
-                coordinates.of.midpoint <-
-                    find.midpoint(image = image,
-                                  image.grey = image.grey.outline,
-                                  center.point = coordinates.of.midpoint,
-                                  number.of.blocks.in.row = 4,
-                                  search.length = 160,
-                                  image.path)
-                
-            }else{
-                coordinates.of.midpoint <-
-                    find.midpoint(image = image,
-                                  image.grey = image.grey.outline,
-                                  center.point = coordinates.of.midpoint,
-                                  number.of.blocks.in.row = 4,
-                                  search.length = (160/(6**(i-1))),
-                                  image.path)
             }
-            print(paste("Coordinates of midpoint: ",
-                        paste(coordinates.of.midpoint, collapse = " ")))
-
+        }else if(find.midpoint.method == "intersectionMidpointFour"){
+            print("Used Method for midpoint: Search around midpoint of intersection the midpoint of surrounding frame")
+            for(i in 1:3){
+                if(i == 1){
+                    
+                    # midpoint is (y,x) and must be reversed
+                    coordinates.of.midpoint <- c(0,0)
+                    coordinates.of.midpoint[1] <- (frame.center[1] + midpoint.left[2]) %/% 2
+                    coordinates.of.midpoint[2] <- (frame.center[2] + midpoint.left[1]) %/% 2
+                    
+                    coordinates.of.midpoint <-
+                        find.midpoint(image = image,
+                                      image.grey = image.grey.outline,
+                                      center.point = coordinates.of.midpoint,
+                                      number.of.blocks.in.row = 4,
+                                      search.length = 160,
+                                      image.path)
+                    
+                }else{
+                    coordinates.of.midpoint <-
+                        find.midpoint(image = image,
+                                      image.grey = image.grey.outline,
+                                      center.point = coordinates.of.midpoint,
+                                      number.of.blocks.in.row = 4,
+                                      search.length = (160/(6**(i-1))),
+                                      image.path)
+                }
+                print(paste("Coordinates of midpoint: ",
+                            paste(coordinates.of.midpoint, collapse = " ")))
+                
+            }
+        }else if(find.midpoint.method == "intersectionFour"){
+            print("Used Method for midpoint: Search around intersection of lines")
+            
+            for(i in 1:3){
+                if(i == 1){
+                    
+                    coordinates.of.midpoint <-
+                        find.midpoint(image = image,
+                                      image.grey = image.grey.outline,
+                                      center.point = frame.center,
+                                      number.of.blocks.in.row = 4,
+                                      search.length = 160,
+                                      image.path)
+                    
+                }else{
+                    coordinates.of.midpoint <-
+                        find.midpoint(image = image,
+                                      image.grey = image.grey.outline,
+                                      center.point = coordinates.of.midpoint,
+                                      number.of.blocks.in.row = 4,
+                                      search.length = (160/(6**(i-1))),
+                                      image.path)
+                }
+                print(paste("Coordinates of midpoint: ",
+                            paste(coordinates.of.midpoint, collapse = " ")))
+                
+            }
+        }else if(find.midpoint.method == "intersectionThree"){
+            print("Used Method for midpoint: Search around intersection of lines")
+            
+            for(i in 1:3){
+                if(i == 1){
+                    
+                    coordinates.of.midpoint <-
+                        find.midpoint(image = image,
+                                      image.grey = image.grey.outline,
+                                      center.point = frame.center,
+                                      number.of.blocks.in.row = 3,
+                                      search.length = 160,
+                                      image.path)
+                    
+                }else{
+                    coordinates.of.midpoint <-
+                        find.midpoint(image = image,
+                                      image.grey = image.grey.outline,
+                                      center.point = coordinates.of.midpoint,
+                                      number.of.blocks.in.row = 3,
+                                      search.length = (160/(6**(i-1))),
+                                      image.path)
+                }
+                print(paste("Coordinates of midpoint: ",
+                            paste(coordinates.of.midpoint, collapse = " ")))
+                
+            }
+            
+        }else if(find.midpoint.method == "oldMethod"){
+            print("Used Method for midpoint: Intersection of lines")
+            
         }
+        
+        if(find.midpoint.method != "oldMethod"){
+            print(coordinates.of.midpoint)
+            midpoint.left[1] <- coordinates.of.midpoint[2]
+            midpoint.left[2] <- coordinates.of.midpoint[1]
+            midpoint.right[1] <- coordinates.of.midpoint[2]
+            midpoint.right[2] <- coordinates.of.midpoint[1]
+            print(midpoint.left)
+            print(left.point)
+            
+            # New Lines
+            first.line <- getLineIndices(start.x = left.point[1],
+                                         start.y = left.point[2],
+                                         end.x = midpoint.left[1], 
+                                         end.y = midpoint.left[2])
+            
+            # right line
+            second.line <- getLineIndices(start.x = right.point[1],
+                                          start.y = right.point[2],
+                                          end.x = midpoint.right[1], # left.x
+                                          end.y = midpoint.right[2]) # top.y
+            
+            lines <- rbind(first.line, second.line)
+            #print(lines)
+            
+            image.information[cbind(lines[,2], lines[,1], 3)] <- -1
+            image.information[cbind(lines[,2], lines[,1], 2)] <- 1
+            image.information[cbind(lines[,2], lines[,1], 1)] <- -1
+        }
+            
+        
+
         
             
         

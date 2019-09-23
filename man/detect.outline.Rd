@@ -5,28 +5,36 @@
 \alias{outline.detect}
 \title{detect.outline}
 \usage{
-detect.outline(image.grey = NULL, image.information = NULL, distance = 20,
-  parameter.for.end = NULL, parameter.distance.deviation = 2,
-  file.name = NULL, grey.mode = "normal.grey")
+detect.outline(input.file = NULL, image.grey = NULL,
+  grey.mode = "normal.grey", parameter.for.end = NULL, distance = 20,
+  parameter.distance.deviation = 2, image.information = NULL,
+  image = NULL)
 }
 \arguments{
-\item{image.grey}{An array (x,y) of values between 0 and 1}
+\item{input.file}{A character:Full path of an image that shall be used for
+outline detection}
 
-\item{image.information}{An array (x,y) of values between 0 and 1}
+\item{image.grey}{A matrix of numbers: Grey values of the otolith image
+(values between 0 and 1)}
 
-\item{distance}{A number (Lines for finding the outline of the otolith
-are this many pixels apart on the x- and y-axes.)}
+\item{grey.mode}{A character: Determines how the grey image shall be
+calculated}
 
-\item{parameter.for.end}{A number (The edge is being found by calculating
-a floating mean. The function marks an edge, if the next point differs
-more than floating mean divided by parameter.for.end.)}
+\item{parameter.for.end}{A number: The edge is being found by calculating
+a floating mean. The function marks an edge if the next point differs
+more than floating mean divided by parameter.for.end}
 
-\item{parameter.distance.deviation}{A number (Outliers get detected by
-multiplying the parameter with the mean distance between points.)}
+\item{distance}{A number: Lines for finding the outline of the otolith
+are this many pixels apart on the x- or y-axes}
 
-\item{file.name}{A character}
+\item{parameter.distance.deviation}{A number: Outliers get detected by
+multiplying the parameter with the mean distance between points}
 
-\item{grey.mode}{A character}
+\item{image.information}{A matrix of numbers: Contains additional pixel
+information of the image (values between 0 and 1)}
+
+\item{image}{A matrix of numbers: Contains the information of the otolith
+image}
 }
 \description{
 Detect the outline of the otolith

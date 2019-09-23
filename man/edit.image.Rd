@@ -5,9 +5,9 @@
 \alias{image.edit}
 \title{edit.image}
 \usage{
-\method{edit}{image}(image = NULL, file.name = NULL, grey.mode = NULL,
-  brightness = NULL, contrast = NULL, red = NULL, green = NULL,
-  blue = NULL)
+\method{edit}{image}(image = NULL, file.name = NULL,
+  grey.mode = NULL, brightness = NULL, contrast = NULL, red = NULL,
+  green = NULL, blue = NULL)
 }
 \arguments{
 \item{image}{An array of numbers between 0 and 1}

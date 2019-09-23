@@ -2,4 +2,5 @@
 
 export(detect.outline)
 export(edit.image)
+export(find.midpoint)
 export(read.age)
