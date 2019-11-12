@@ -316,6 +316,9 @@ getLineIndices <- function(start.x, start.y, end.x, end.y){
 # parameter.for.end signals, when the edge is being found. (When brightness
 # of a current point is below moving.average / parameter.for.end .)
 
+# TODO: Try another method of edge detection
+# (https://en.wikipedia.org/wiki/Edge_detection)
+
 findEdge <- function(image.grey,
                      start.pixel, end.pixel,
                      parameter.for.end){
